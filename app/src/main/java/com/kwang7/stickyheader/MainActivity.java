@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 import com.kwang7.stickyheader.core.RecyclerAdapter;
 import com.kwang7.stickyheader.core.SectionLinearLayoutManager;
-import com.kwang7.stickyheader.model.SectionItem;
+import com.kwang7.stickyheader.model.SectionHeader;
 import com.kwang7.stickyheader.model.Item;
 
 import java.util.ArrayList;
@@ -69,21 +69,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        recyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                adapter.addDataList(genDataList(adapter.getItemCount()));
-            }
-        }, 5000);
+        recyclerView.postDelayed(() -> adapter.addDataList(genDataList(adapter.getItemCount())), 5000);
     }
 
     public static List<Object> genDataList(int start) {
         List<Object> items = new ArrayList<>();
         for (int i = start; i < 100 + start; i++) {
             if (i % 10 == 0) {
-                items.add(new SectionItem("Section " + i));
+                items.add(new SectionHeader("Section " + i));
             } else {
-                items.add(new Item("Item " + i, "description " + i));
+                items.add(new Item("Discover item " + i, "description " + i));
             }
         }
         return items;

@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Section Header Demo</string>
-    <string name="action_button">Action button</string>
+    <string name="action_button">View All</string>
 </resources>

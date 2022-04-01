@@ -4,11 +4,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.kwang7.stickyheader.databinding.ItemViewBinding;
 import com.kwang7.stickyheader.databinding.SectionViewBinding;
-import com.kwang7.stickyheader.model.SectionItem;
+import com.kwang7.stickyheader.model.SectionHeader;
 import com.kwang7.stickyheader.model.Item;
 
 
@@ -37,19 +38,11 @@ public final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
             itemViewHolder.itemTitle.setText(((Item) item).title);
             itemViewHolder.itemDescription.setText(((Item) item).message);
-        } else if (item instanceof SectionItem) {
+        } else if (item instanceof SectionHeader) {
             SectionViewHolder headerViewHolder = (SectionViewHolder) holder;
-            headerViewHolder.sectionTitle.setText(((SectionItem) item).title);
-
-            headerViewHolder.sectionButton.setTextColor(((SectionItem) item).color);
+            headerViewHolder.sectionTitle.setText(((SectionHeader) item).title);
             headerViewHolder.sectionButton.setOnClickListener(v -> {
-                if (((SectionItem) item).color == 0xffff5050) {
-                    ((SectionItem) item).color = 0xff777777;
-                } else {
-                    ((SectionItem) item).color = 0xffff5050;
-                }
-
-                notifyItemChanged(position);
+                Toast.makeText(v.getContext(), "Action clicked at " + position, Toast.LENGTH_SHORT).show();
             });
         }
     }
