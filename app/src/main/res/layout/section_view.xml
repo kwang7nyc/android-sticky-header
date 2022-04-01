@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="item"
+            type="com.kwang7.stickyheader.model.ListItem" />
     </data>
 
     <RelativeLayout
@@ -22,6 +24,7 @@
             android:layout_alignParentTop="true"
             android:textSize="30sp"
             android:textStyle="bold"
+            android:text="@{item.title}"
             tools:text="Header Text"/>
 
         <TextView

@@ -52,14 +52,13 @@ public final class CustomAdapter extends ListAdapter<ListItem, CustomAdapter.Bas
 
         if (item.isHeader) {
             CustomAdapter.SectionViewHolder sectionViewHolder = (CustomAdapter.SectionViewHolder) holder;
-            sectionViewHolder.sectionTitle.setText(item.title);
+            sectionViewHolder.bind(item);
             sectionViewHolder.sectionButton.setOnClickListener(v -> Toast.makeText(v.getContext(),
                                                                                    "Action clicked at " + position,
                                                                                    Toast.LENGTH_SHORT).show());
         } else {
             CustomAdapter.ItemViewHolder itemViewHolder = (CustomAdapter.ItemViewHolder) holder;
-            itemViewHolder.itemTitle.setText(item.title);
-            itemViewHolder.itemDescription.setText(item.description);
+            itemViewHolder.bind(item);
         }
     }
 
@@ -94,27 +93,32 @@ public final class CustomAdapter extends ListAdapter<ListItem, CustomAdapter.Bas
     }
 
     private static final class ItemViewHolder extends CustomAdapter.BaseViewHolder {
-
-        TextView itemTitle;
-        TextView itemDescription;
+        ItemViewBinding binding;
 
         ItemViewHolder(ItemViewBinding binding) {
             super(binding.getRoot());
+            this.binding = binding;
+        }
 
-            itemTitle = binding.itemTitle;
-            itemDescription = binding.itemDescription;
+        public void bind(ListItem item) {
+            binding.setItem(item);
+            binding.executePendingBindings();
         }
     }
 
     private static final class SectionViewHolder extends CustomAdapter.BaseViewHolder {
-
-        TextView sectionTitle;
         TextView sectionButton;
+        SectionViewBinding binding;
 
         SectionViewHolder(SectionViewBinding binding) {
             super(binding.getRoot());
-            sectionTitle = binding.sectionTitle;
+            this.binding = binding;
             sectionButton = binding.sectionButton;
+        }
+
+        public void bind(ListItem item) {
+            binding.setItem(item);
+            binding.executePendingBindings();
         }
     }
 
