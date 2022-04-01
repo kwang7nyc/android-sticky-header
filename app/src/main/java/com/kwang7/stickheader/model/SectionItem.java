@@ -1,12 +1,12 @@
 package com.kwang7.stickheader.model;
 
 
-public class HeaderItem implements StickyHeaderModel {
+public class SectionItem implements SectionHeader {
 
     public final String title;
     public int color = 0xff777777;
 
-    public HeaderItem(String title) {
+    public SectionItem(String title) {
         this.title = title;
     }
 }

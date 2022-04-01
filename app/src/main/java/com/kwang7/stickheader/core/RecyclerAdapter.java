@@ -6,9 +6,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.kwang7.stickheader.databinding.HeaderViewBinding;
 import com.kwang7.stickheader.databinding.ItemViewBinding;
-import com.kwang7.stickheader.model.HeaderItem;
+import com.kwang7.stickheader.databinding.SectionViewBinding;
+import com.kwang7.stickheader.model.SectionItem;
 import com.kwang7.stickheader.model.Item;
 
 
@@ -26,7 +26,7 @@ public final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.
             return new ItemViewHolder(ItemViewBinding.inflate(LayoutInflater.from(parent.getContext())));
         } else {
 
-            return new HeaderViewHolder(HeaderViewBinding.inflate((LayoutInflater.from(parent.getContext()))));
+            return new SectionViewHolder(SectionViewBinding.inflate((LayoutInflater.from(parent.getContext()))));
         }
     }
 
@@ -35,18 +35,18 @@ public final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.
         final Object item = dataList.get(position);
         if (item instanceof Item) {
             ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-            itemViewHolder.titleTextView.setText(((Item) item).title);
-            itemViewHolder.messageTextView.setText(((Item) item).message);
-        } else if (item instanceof HeaderItem) {
-            HeaderViewHolder headerViewHolder = (HeaderViewHolder) holder;
-            headerViewHolder.titleTextView.setText(((HeaderItem) item).title);
+            itemViewHolder.itemTitle.setText(((Item) item).title);
+            itemViewHolder.itemDescription.setText(((Item) item).message);
+        } else if (item instanceof SectionItem) {
+            SectionViewHolder headerViewHolder = (SectionViewHolder) holder;
+            headerViewHolder.sectionTitle.setText(((SectionItem) item).title);
 
-            headerViewHolder.button.setTextColor(((HeaderItem) item).color);
-            headerViewHolder.button.setOnClickListener(v -> {
-                if (((HeaderItem) item).color == 0xffff5050) {
-                    ((HeaderItem) item).color = 0xff777777;
+            headerViewHolder.sectionButton.setTextColor(((SectionItem) item).color);
+            headerViewHolder.sectionButton.setOnClickListener(v -> {
+                if (((SectionItem) item).color == 0xffff5050) {
+                    ((SectionItem) item).color = 0xff777777;
                 } else {
-                    ((HeaderItem) item).color = 0xffff5050;
+                    ((SectionItem) item).color = 0xffff5050;
                 }
 
                 notifyItemChanged(position);
@@ -85,27 +85,27 @@ public final class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.
 
     private static final class ItemViewHolder extends BaseViewHolder {
 
-        TextView titleTextView;
-        TextView messageTextView;
+        TextView itemTitle;
+        TextView itemDescription;
 
         ItemViewHolder(ItemViewBinding binding) {
             super(binding.getRoot());
 
-            titleTextView = binding.tvTitle;
-            messageTextView = binding.tvMessage;;
+            itemTitle = binding.itemTitle;
+            itemDescription = binding.itemDescription;;
         }
     }
 
-    private static final class HeaderViewHolder extends BaseViewHolder {
+    private static final class SectionViewHolder extends BaseViewHolder {
 
-        TextView titleTextView;
-        TextView button;
+        TextView sectionTitle;
+        TextView sectionButton;
 
-        HeaderViewHolder(HeaderViewBinding binding) {
+        SectionViewHolder(SectionViewBinding binding) {
             super(binding.getRoot());
 
-            titleTextView = binding.tvTitle;;
-            button = binding.button;
+            sectionTitle = binding.sectionTitle;;
+            sectionButton = binding.sectionButton;
         }
     }
 

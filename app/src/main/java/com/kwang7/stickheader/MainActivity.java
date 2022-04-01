@@ -8,8 +8,8 @@ import android.os.Bundle;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 import com.kwang7.stickheader.core.RecyclerAdapter;
-import com.kwang7.stickheader.core.StickyLinearLayoutManager;
-import com.kwang7.stickheader.model.HeaderItem;
+import com.kwang7.stickheader.core.SectionLinearLayoutManager;
+import com.kwang7.stickheader.model.SectionItem;
 import com.kwang7.stickheader.model.Item;
 
 import java.util.ArrayList;
@@ -17,8 +17,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
-
+    public static final String TAG = MainActivity.class.getSimpleName();
     private RecyclerAdapter adapter;
 
     @Override
@@ -26,11 +25,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recyclerView = findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
 
         adapter = new RecyclerAdapter();
         adapter.setDataList(genDataList(0));
-        StickyLinearLayoutManager layoutManager = new StickyLinearLayoutManager(this, adapter) {
+        SectionLinearLayoutManager layoutManager = new SectionLinearLayoutManager(this, adapter) {
             @Override
             public boolean isAutoMeasureEnabled() {
                 return true;
@@ -58,15 +57,15 @@ public class MainActivity extends AppCompatActivity {
         layoutManager.elevateHeaders(5);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-        layoutManager.setStickyHeaderListener(new StickyLinearLayoutManager.StickyHeaderListener() {
+        layoutManager.setStickyHeaderListener(new SectionLinearLayoutManager.SectionHeaderListener() {
             @Override
             public void headerAttached(View headerView, int adapterPosition) {
-                Log.d("StickyHeader", "Header Attached : " + adapterPosition);
+                Log.d(TAG, "Header Attached : " + adapterPosition);
             }
 
             @Override
             public void headerDetached(View headerView, int adapterPosition) {
-                Log.d("StickyHeader", "Header Detached : " + adapterPosition);
+                Log.d(TAG, "Header Detached : " + adapterPosition);
             }
         });
 
@@ -82,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         List<Object> items = new ArrayList<>();
         for (int i = start; i < 100 + start; i++) {
             if (i % 10 == 0) {
-                items.add(new HeaderItem("Header " + i));
+                items.add(new SectionItem("Section " + i));
             } else {
                 items.add(new Item("Item " + i, "description " + i));
             }

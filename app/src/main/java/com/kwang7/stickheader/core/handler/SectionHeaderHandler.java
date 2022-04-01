@@ -9,13 +9,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.kwang7.stickheader.core.StickyLinearLayoutManager;
+import com.kwang7.stickheader.core.SectionLinearLayoutManager;
 import com.kwang7.stickheader.core.ViewHolderFactory;
 
 import java.util.List;
 import java.util.Map;
 
-public final class StickyHeaderHandler {
+public final class SectionHeaderHandler {
 
     private static final int INVALID_POSITION = -1;
 
@@ -38,19 +38,19 @@ public final class StickyHeaderHandler {
     private int cachedElevation = NO_ELEVATION;
 
     @Nullable
-    private StickyLinearLayoutManager.StickyHeaderListener listener;
+    private SectionLinearLayoutManager.SectionHeaderListener listener;
 
     private final ViewTreeObserver.OnGlobalLayoutListener visibilityObserver = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
-            int visibility = StickyHeaderHandler.this.mRecyclerView.getVisibility();
+            int visibility = SectionHeaderHandler.this.mRecyclerView.getVisibility();
             if (currentHeader != null) {
                 currentHeader.setVisibility(visibility);
             }
         }
     };
 
-    public StickyHeaderHandler(RecyclerView recyclerView) {
+    public SectionHeaderHandler(RecyclerView recyclerView) {
         this.mRecyclerView = recyclerView;
         checkMargins = recyclerViewHasPadding();
     }
@@ -130,7 +130,7 @@ public final class StickyHeaderHandler {
         mRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(visibilityObserver);
     }
 
-    public void setListener(@Nullable StickyLinearLayoutManager.StickyHeaderListener listener) {
+    public void setListener(@Nullable SectionLinearLayoutManager.SectionHeaderListener listener) {
         this.listener = listener;
     }
 

@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">sticky-header</string>
+    <string name="app_name">Section Header Demo</string>
+    <string name="action_button">Action button</string>
 </resources>
