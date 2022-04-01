@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.kwang7.stickyheader.core.handler.SectionHeaderHandler;
-import com.kwang7.stickyheader.model.SectionHeader;
+import com.kwang7.stickyheader.model.ListItem;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -154,7 +154,7 @@ public class SectionLinearLayoutManager extends LinearLayoutManager {
 
     private void cacheHeaderPositions() {
         headerPositions.clear();
-        List<?> adapterData = adapterDataProvider.getAdapterData();
+        List<ListItem> adapterData = adapterDataProvider.getAdapterData();
         if (adapterData == null) {
             if (sectionHeaderHandler != null) {
                 sectionHeaderHandler.setHeaderPositions(headerPositions);
@@ -163,8 +163,10 @@ public class SectionLinearLayoutManager extends LinearLayoutManager {
         }
 
         for (int i = 0; i < adapterData.size(); i++) {
-            if (adapterData.get(i) instanceof SectionHeader) {
-                headerPositions.add(i);
+            if (adapterData.get(i) != null) {
+                ListItem listItem = adapterData.get(i);
+                if (listItem.isHeader)
+                    headerPositions.add(i);
             }
         }
         if (sectionHeaderHandler != null) {

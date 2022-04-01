@@ -7,10 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
-import com.kwang7.stickyheader.core.RecyclerAdapter;
 import com.kwang7.stickyheader.core.SectionLinearLayoutManager;
-import com.kwang7.stickyheader.model.SectionHeader;
-import com.kwang7.stickyheader.model.Item;
+import com.kwang7.stickyheader.model.ListItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +16,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getSimpleName();
-    private RecyclerAdapter adapter;
+    private CustomAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
 
-        adapter = new RecyclerAdapter();
+        adapter = new CustomAdapter();
         adapter.setDataList(genDataList(0));
         SectionLinearLayoutManager layoutManager = new SectionLinearLayoutManager(this, adapter) {
             @Override
@@ -72,13 +70,13 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.postDelayed(() -> adapter.addDataList(genDataList(adapter.getItemCount())), 5000);
     }
 
-    public static List<Object> genDataList(int start) {
-        List<Object> items = new ArrayList<>();
+    public static List<ListItem> genDataList(int start) {
+        List<ListItem> items = new ArrayList<>();
         for (int i = start; i < 100 + start; i++) {
             if (i % 10 == 0) {
-                items.add(new SectionHeader("Section " + i));
+                items.add(new ListItem("Section " + i, null, true));
             } else {
-                items.add(new Item("Discover item " + i, "description " + i));
+                items.add(new ListItem("Discover item " + i, "description " + i, false));
             }
         }
         return items;
