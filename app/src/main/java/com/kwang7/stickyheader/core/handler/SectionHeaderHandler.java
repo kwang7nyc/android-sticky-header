@@ -40,15 +40,16 @@ public final class SectionHeaderHandler {
     @Nullable
     private SectionLinearLayoutManager.SectionHeaderListener listener;
 
-    private final ViewTreeObserver.OnGlobalLayoutListener visibilityObserver = new ViewTreeObserver.OnGlobalLayoutListener() {
-        @Override
-        public void onGlobalLayout() {
-            int visibility = SectionHeaderHandler.this.mRecyclerView.getVisibility();
-            if (currentHeader != null) {
-                currentHeader.setVisibility(visibility);
+    private final ViewTreeObserver.OnGlobalLayoutListener visibilityObserver =
+        new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int visibility = SectionHeaderHandler.this.mRecyclerView.getVisibility();
+                if (currentHeader != null) {
+                    currentHeader.setVisibility(visibility);
+                }
             }
-        }
-    };
+        };
 
     public SectionHeaderHandler(RecyclerView recyclerView) {
         this.mRecyclerView = recyclerView;
@@ -59,8 +60,14 @@ public final class SectionHeaderHandler {
         this.mHeaderPositions = headerPositions;
     }
 
-    public void updateHeaderState(int firstVisiblePosition, Map<Integer, View> visibleHeaders, ViewHolderFactory viewFactory, boolean atTop) {
-        int headerPositionToShow = atTop ? INVALID_POSITION : getHeaderPositionToShow(firstVisiblePosition, visibleHeaders.get(firstVisiblePosition));
+    public void updateHeaderState(int firstVisiblePosition,
+                                  Map<Integer, View> visibleHeaders,
+                                  ViewHolderFactory viewFactory,
+                                  boolean atTop) {
+        int headerPositionToShow = atTop
+                                   ? INVALID_POSITION
+                                   : getHeaderPositionToShow(firstVisiblePosition,
+                                                             visibleHeaders.get(firstVisiblePosition));
         View headerToCopy = visibleHeaders.get(headerPositionToShow);
         if (headerPositionToShow != lastBoundPosition) {
             if (headerPositionToShow == INVALID_POSITION || (checkMargins && headerAwayFromEdge(headerToCopy))) {
@@ -77,16 +84,11 @@ public final class SectionHeaderHandler {
             lastBoundPosition = INVALID_POSITION;
         }
         checkHeaderPositions(visibleHeaders);
-        mRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                checkElevation();
-            }
-        });
+        mRecyclerView.post(this::checkElevation);
     }
 
     private void checkHeaderPositions(final Map<Integer, View> visibleHeaders) {
-        if (currentHeader == null) return;
+        if (currentHeader == null) { return; }
         if (currentHeader.getHeight() == 0) {
             waitForLayoutAndRetry(visibleHeaders);
             return;
@@ -184,7 +186,9 @@ public final class SectionHeaderHandler {
     }
 
     private boolean headerIsOffset(View headerForPosition) {
-        return headerForPosition != null && (orientation == LinearLayoutManager.VERTICAL ? headerForPosition.getY() > 0 : headerForPosition.getX() > 0);
+        return headerForPosition != null && (orientation == LinearLayoutManager.VERTICAL
+                                             ? headerForPosition.getY() > 0
+                                             : headerForPosition.getX() > 0);
     }
 
     private void attachHeader(RecyclerView.ViewHolder viewHolder, int headerPosition) {
@@ -247,14 +251,14 @@ public final class SectionHeaderHandler {
 
     private void checkTranslation() {
         final View view = currentHeader;
-        if (view == null) return;
+        if (view == null) { return; }
         view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             int previous = currentDimension();
 
             @Override
             public void onGlobalLayout() {
                 view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                if (currentHeader == null) return;
+                if (currentHeader == null) { return; }
 
                 int newDimen = currentDimension();
                 if (headerHasTranslation() && previous != newDimen) {
@@ -267,7 +271,7 @@ public final class SectionHeaderHandler {
     private void checkElevation() {
         if (headerElevation != NO_ELEVATION && currentHeader != null) {
             if (orientation == LinearLayoutManager.VERTICAL && currentHeader.getTranslationY() == 0
-                    || orientation == LinearLayoutManager.HORIZONTAL && currentHeader.getTranslationX() == 0) {
+                || orientation == LinearLayoutManager.HORIZONTAL && currentHeader.getTranslationX() == 0) {
                 elevateHeader();
             } else {
                 settleHeader();
@@ -325,7 +329,9 @@ public final class SectionHeaderHandler {
     }
 
     private boolean headerAwayFromEdge(View headerToCopy) {
-        return headerToCopy != null && (orientation == LinearLayoutManager.VERTICAL ? headerToCopy.getY() > 0 : headerToCopy.getX() > 0);
+        return headerToCopy != null && (orientation == LinearLayoutManager.VERTICAL
+                                        ? headerToCopy.getY() > 0
+                                        : headerToCopy.getX() > 0);
     }
 
     private boolean recyclerViewHasPadding() {
@@ -338,17 +344,17 @@ public final class SectionHeaderHandler {
 
     private void waitForLayoutAndRetry(final Map<Integer, View> visibleHeaders) {
         final View view = currentHeader;
-        if (view == null) return;
+        if (view == null) { return; }
         view.getViewTreeObserver().addOnGlobalLayoutListener(
-                new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        if (currentHeader == null) return;
-                        getRecyclerParent().requestLayout();
-                        checkHeaderPositions(visibleHeaders);
-                    }
-                });
+            new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    if (currentHeader == null) { return; }
+                    getRecyclerParent().requestLayout();
+                    checkHeaderPositions(visibleHeaders);
+                }
+            });
     }
 
     private void safeDetachHeader() {

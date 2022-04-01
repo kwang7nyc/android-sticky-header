@@ -163,10 +163,8 @@ public class SectionLinearLayoutManager extends LinearLayoutManager {
         }
 
         for (int i = 0; i < adapterData.size(); i++) {
-            if (adapterData.get(i) != null) {
-                ListItem listItem = adapterData.get(i);
-                if (listItem.isHeader)
-                    headerPositions.add(i);
+            if (adapterData.get(i) != null && adapterData.get(i).isHeader) {
+                headerPositions.add(i);
             }
         }
         if (sectionHeaderHandler != null) {
