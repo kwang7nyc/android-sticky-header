@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         layoutManager.elevateHeaders(5);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-        layoutManager.setStickyHeaderListener(new SectionLinearLayoutManager.SectionHeaderListener() {
+        layoutManager.setSectionHeaderListener(new SectionLinearLayoutManager.SectionHeaderListener() {
             @Override
             public void headerAttached(View headerView, int adapterPosition) {
                 Log.d(TAG, "Header Attached : " + adapterPosition);

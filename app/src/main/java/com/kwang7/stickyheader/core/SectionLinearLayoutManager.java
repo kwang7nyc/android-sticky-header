@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class SectionLinearLayoutManager extends LinearLayoutManager {
 
-    private final AdapterDataProvider sectionProvider;
+    private final AdapterDataProvider adapterDataProvider;
     private SectionHeaderHandler sectionHeaderHandler;
 
     private final List<Integer> headerPositions = new ArrayList<>();
@@ -30,17 +30,19 @@ public class SectionLinearLayoutManager extends LinearLayoutManager {
     @Nullable
     private SectionHeaderListener sectionHeaderListener;
 
-    public SectionLinearLayoutManager(Context context, AdapterDataProvider headerProvider) {
-        this(context, VERTICAL, false, headerProvider);
+    public SectionLinearLayoutManager(Context context, AdapterDataProvider adapterDataProvider) {
+        this(context, VERTICAL, false, adapterDataProvider);
     }
 
-    public SectionLinearLayoutManager(Context context, int orientation, boolean reverseLayout, AdapterDataProvider headerProvider) {
+    public SectionLinearLayoutManager(Context context,
+                                      int orientation,
+                                      boolean reverseLayout,
+                                      AdapterDataProvider headerProvider) {
         super(context, orientation, reverseLayout);
-
-        this.sectionProvider = headerProvider;
+        this.adapterDataProvider = headerProvider;
     }
 
-    public void setStickyHeaderListener(@Nullable SectionHeaderListener listener) {
+    public void setSectionHeaderListener(@Nullable SectionHeaderListener listener) {
         this.sectionHeaderListener = listener;
         if (sectionHeaderHandler != null) {
             sectionHeaderHandler.setListener(listener);
@@ -77,7 +79,10 @@ public class SectionLinearLayoutManager extends LinearLayoutManager {
         int scroll = super.scrollVerticallyBy(dy, recycler, state);
         if (Math.abs(scroll) > 0) {
             if (sectionHeaderHandler != null) {
-                sectionHeaderHandler.updateHeaderState(findFirstVisibleItemPosition(), getVisibleHeaders(), viewHolderFactory, findFirstCompletelyVisibleItemPosition() == 0);
+                sectionHeaderHandler.updateHeaderState(findFirstVisibleItemPosition(),
+                                                       getVisibleHeaders(),
+                                                       viewHolderFactory,
+                                                       findFirstCompletelyVisibleItemPosition() == 0);
             }
         }
         return scroll;
@@ -88,7 +93,10 @@ public class SectionLinearLayoutManager extends LinearLayoutManager {
         int scroll = super.scrollHorizontallyBy(dx, recycler, state);
         if (Math.abs(scroll) > 0) {
             if (sectionHeaderHandler != null) {
-                sectionHeaderHandler.updateHeaderState(findFirstVisibleItemPosition(), getVisibleHeaders(), viewHolderFactory, findFirstCompletelyVisibleItemPosition() == 0);
+                sectionHeaderHandler.updateHeaderState(findFirstVisibleItemPosition(),
+                                                       getVisibleHeaders(),
+                                                       viewHolderFactory,
+                                                       findFirstCompletelyVisibleItemPosition() == 0);
             }
         }
         return scroll;
@@ -125,7 +133,10 @@ public class SectionLinearLayoutManager extends LinearLayoutManager {
 
     private void resetHeaderHandler() {
         sectionHeaderHandler.reset(getOrientation());
-        sectionHeaderHandler.updateHeaderState(findFirstVisibleItemPosition(), getVisibleHeaders(), viewHolderFactory, findFirstCompletelyVisibleItemPosition() == 0);
+        sectionHeaderHandler.updateHeaderState(findFirstVisibleItemPosition(),
+                                               getVisibleHeaders(),
+                                               viewHolderFactory,
+                                               findFirstCompletelyVisibleItemPosition() == 0);
     }
 
     private Map<Integer, View> getVisibleHeaders() {
@@ -143,7 +154,7 @@ public class SectionLinearLayoutManager extends LinearLayoutManager {
 
     private void cacheHeaderPositions() {
         headerPositions.clear();
-        List<?> adapterData = sectionProvider.getAdapterData();
+        List<?> adapterData = adapterDataProvider.getAdapterData();
         if (adapterData == null) {
             if (sectionHeaderHandler != null) {
                 sectionHeaderHandler.setHeaderPositions(headerPositions);
