@@ -1,4 +1,4 @@
-package com.kwang7.stickheader.core;
+package com.kwang7.stickyheader.core;
 
 import java.util.List;
 

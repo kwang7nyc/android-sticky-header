@@ -1,4 +1,4 @@
-package com.kwang7.stickheader.core;
+package com.kwang7.stickyheader.core;
 
 import android.content.Context;
 
@@ -7,8 +7,8 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.kwang7.stickheader.core.handler.SectionHeaderHandler;
-import com.kwang7.stickheader.model.SectionItem;
+import com.kwang7.stickyheader.core.handler.SectionHeaderHandler;
+import com.kwang7.stickyheader.model.SectionItem;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

@@ -1,7 +1,7 @@
-package com.kwang7.stickheader.model;
+package com.kwang7.stickyheader.model;
 
 
-public class SectionItem implements SectionHeader {
+public class SectionItem {
 
     public final String title;
     public int color = 0xff777777;

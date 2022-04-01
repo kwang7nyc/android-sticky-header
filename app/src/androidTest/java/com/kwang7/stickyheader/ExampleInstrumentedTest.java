@@ -1,4 +1,4 @@
-package com.kwang7.stickheader;
+package com.kwang7.stickyheader;
 
 import android.content.Context;
 import androidx.test.platform.app.InstrumentationRegistry;

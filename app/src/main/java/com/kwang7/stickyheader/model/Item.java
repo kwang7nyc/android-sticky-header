@@ -1,4 +1,4 @@
-package com.kwang7.stickheader.model;
+package com.kwang7.stickyheader.model;
 
 public class Item {
 

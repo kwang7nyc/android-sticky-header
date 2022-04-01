@@ -1,4 +1,4 @@
-package com.kwang7.stickheader.core;
+package com.kwang7.stickyheader.core;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -6,10 +6,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.kwang7.stickheader.databinding.ItemViewBinding;
-import com.kwang7.stickheader.databinding.SectionViewBinding;
-import com.kwang7.stickheader.model.SectionItem;
-import com.kwang7.stickheader.model.Item;
+import com.kwang7.stickyheader.databinding.ItemViewBinding;
+import com.kwang7.stickyheader.databinding.SectionViewBinding;
+import com.kwang7.stickyheader.model.SectionItem;
+import com.kwang7.stickyheader.model.Item;
 
 
 import java.util.ArrayList;

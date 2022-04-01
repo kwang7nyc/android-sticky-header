@@ -1,4 +1,4 @@
-package com.kwang7.stickheader;
+package com.kwang7.stickyheader;
 
 import org.junit.Test;
 

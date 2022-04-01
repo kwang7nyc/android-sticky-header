@@ -1,4 +1,4 @@
-package com.kwang7.stickheader;
+package com.kwang7.stickyheader;
 
 import android.content.Context;
 import android.util.Log;
@@ -7,10 +7,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
-import com.kwang7.stickheader.core.RecyclerAdapter;
-import com.kwang7.stickheader.core.SectionLinearLayoutManager;
-import com.kwang7.stickheader.model.SectionItem;
-import com.kwang7.stickheader.model.Item;
+import com.kwang7.stickyheader.core.RecyclerAdapter;
+import com.kwang7.stickyheader.core.SectionLinearLayoutManager;
+import com.kwang7.stickyheader.model.SectionItem;
+import com.kwang7.stickyheader.model.Item;
 
 import java.util.ArrayList;
 import java.util.List;
