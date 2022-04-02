@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
+import com.kwang7.stickyheader.core.CustomAdapter;
 import com.kwang7.stickyheader.core.SectionLinearLayoutManager;
 import com.kwang7.stickyheader.model.ListItem;
 

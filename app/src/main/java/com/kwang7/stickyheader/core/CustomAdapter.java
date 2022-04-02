@@ -1,4 +1,4 @@
-package com.kwang7.stickyheader;
+package com.kwang7.stickyheader.core;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
-import com.kwang7.stickyheader.core.AdapterDataProvider;
 import com.kwang7.stickyheader.databinding.ItemViewBinding;
 import com.kwang7.stickyheader.databinding.SectionViewBinding;
 import com.kwang7.stickyheader.model.ListItem;
@@ -34,7 +33,7 @@ public final class CustomAdapter extends ListAdapter<ListItem, CustomAdapter.Bas
         }
     };
 
-    protected CustomAdapter() {
+    public CustomAdapter() {
         super(DiffCallback);
     }
 
