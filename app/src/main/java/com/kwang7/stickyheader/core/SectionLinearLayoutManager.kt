@@ -2,15 +2,11 @@ package com.kwang7.stickyheader.core
 
 import android.content.Context
 import android.view.View
-import com.kwang7.stickyheader.core.AdapterDataProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.kwang7.stickyheader.core.handler.SectionHeaderHandler
-import com.kwang7.stickyheader.core.ViewHolderFactory
-import com.kwang7.stickyheader.core.SectionLinearLayoutManager.SectionHeaderListener
-import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView
-import java.util.ArrayList
-import java.util.LinkedHashMap
+import androidx.recyclerview.widget.RecyclerView.Recycler
+import com.kwang7.stickyheader.core.handler.SectionHeaderHandler
+import kotlin.math.abs
 
 open class SectionLinearLayoutManager(
     context: Context?,
@@ -25,13 +21,11 @@ open class SectionLinearLayoutManager(
     private var headerElevation = SectionHeaderHandler.NO_ELEVATION
     private var sectionHeaderListener: SectionHeaderListener? = null
 
-    constructor(context: Context?, adapterDataProvider: AdapterDataProvider) : this(context, VERTICAL, false, adapterDataProvider) {}
+    constructor(context: Context?, adapterDataProvider: AdapterDataProvider) : this(context, VERTICAL, false, adapterDataProvider)
 
     fun setSectionHeaderListener(listener: SectionHeaderListener?) {
         sectionHeaderListener = listener
-        if (sectionHeaderHandler != null) {
-            sectionHeaderHandler!!.setListener(listener)
-        }
+        sectionHeaderHandler?.setListener(listener)
     }
 
     fun elevateHeaders(elevateHeaders: Boolean) {
@@ -59,62 +53,63 @@ open class SectionLinearLayoutManager(
 
     override fun scrollVerticallyBy(dy: Int, recycler: Recycler, state: RecyclerView.State): Int {
         val scroll = super.scrollVerticallyBy(dy, recycler, state)
-        if (Math.abs(scroll) > 0) {
-            if (sectionHeaderHandler != null) {
-                sectionHeaderHandler!!.updateHeaderState(findFirstVisibleItemPosition(),
-                        visibleHeaders,
-                        viewHolderFactory,
-                        findFirstCompletelyVisibleItemPosition() == 0)
-            }
+        if (abs(scroll) > 0) {
+            sectionHeaderHandler?.updateHeaderState(
+                    findFirstVisibleItemPosition(),
+                    visibleHeaders,
+                    viewHolderFactory,
+                    findFirstCompletelyVisibleItemPosition() == 0
+            )
         }
         return scroll
     }
 
     override fun scrollHorizontallyBy(dx: Int, recycler: Recycler, state: RecyclerView.State): Int {
         val scroll = super.scrollHorizontallyBy(dx, recycler, state)
-        if (Math.abs(scroll) > 0) {
-            if (sectionHeaderHandler != null) {
-                sectionHeaderHandler!!.updateHeaderState(findFirstVisibleItemPosition(),
-                        visibleHeaders,
-                        viewHolderFactory,
-                        findFirstCompletelyVisibleItemPosition() == 0)
-            }
+        if (abs(scroll) > 0) {
+            sectionHeaderHandler?.updateHeaderState(
+                    findFirstVisibleItemPosition(),
+                    visibleHeaders,
+                    viewHolderFactory,
+                    findFirstCompletelyVisibleItemPosition() == 0
+            )
         }
         return scroll
     }
 
     override fun removeAndRecycleAllViews(recycler: Recycler) {
         super.removeAndRecycleAllViews(recycler)
-        if (sectionHeaderHandler != null) {
-            sectionHeaderHandler!!.clearHeader()
-        }
+        sectionHeaderHandler?.clearHeader()
     }
 
     override fun onAttachedToWindow(view: RecyclerView) {
         viewHolderFactory = ViewHolderFactory(view)
         sectionHeaderHandler = SectionHeaderHandler(view)
-        sectionHeaderHandler!!.setElevateHeaders(headerElevation)
-        sectionHeaderHandler!!.setListener(sectionHeaderListener)
+        sectionHeaderHandler?.let {
+            it.setElevateHeaders(headerElevation)
+            it.setListener(sectionHeaderListener)
+        }
+
         if (headerPositions.size > 0) {
-            sectionHeaderHandler!!.setHeaderPositions(headerPositions)
+            sectionHeaderHandler?.setHeaderPositions(headerPositions)
             resetHeaderHandler()
         }
         super.onAttachedToWindow(view)
     }
 
     override fun onDetachedFromWindow(view: RecyclerView, recycler: Recycler) {
-        if (sectionHeaderHandler != null) {
-            sectionHeaderHandler!!.clearVisibilityObserver()
-        }
+        sectionHeaderHandler?.clearVisibilityObserver()
         super.onDetachedFromWindow(view, recycler)
     }
 
     private fun resetHeaderHandler() {
-        sectionHeaderHandler!!.reset(orientation)
-        sectionHeaderHandler!!.updateHeaderState(findFirstVisibleItemPosition(),
-                visibleHeaders,
-                viewHolderFactory,
-                findFirstCompletelyVisibleItemPosition() == 0)
+        sectionHeaderHandler?.let {
+            it.reset(orientation)
+            it.updateHeaderState(findFirstVisibleItemPosition(),
+                    visibleHeaders,
+                    viewHolderFactory,
+                    findFirstCompletelyVisibleItemPosition() == 0)
+        }
     }
 
     private val visibleHeaders: Map<Int, View>
@@ -134,19 +129,12 @@ open class SectionLinearLayoutManager(
         headerPositions.clear()
         val adapterData = adapterDataProvider.adapterData
         if (adapterData == null) {
-            if (sectionHeaderHandler != null) {
-                sectionHeaderHandler!!.setHeaderPositions(headerPositions)
-            }
+            sectionHeaderHandler?.setHeaderPositions(headerPositions)
             return
         }
-        for (i in adapterData.indices) {
-            if (adapterData[i] != null && adapterData[i]!!.isHeader) {
-                headerPositions.add(i)
-            }
-        }
-        if (sectionHeaderHandler != null) {
-            sectionHeaderHandler!!.setHeaderPositions(headerPositions)
-        }
+
+        adapterData.forEachIndexed { index, item -> item.let { if (it.isHeader) headerPositions.add(index) } }
+        sectionHeaderHandler?.setHeaderPositions(headerPositions)
     }
 
     interface SectionHeaderListener {
