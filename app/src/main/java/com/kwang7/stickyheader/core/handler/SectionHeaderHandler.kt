@@ -16,7 +16,7 @@ class SectionHeaderHandler(private val recyclerView: RecyclerView) {
     private var currentViewHolder: RecyclerView.ViewHolder? = null
     private var currentHeader: View? = null
     private val checkMargins: Boolean
-    private var mHeaderPositions: List<Int>? = null
+    private var headerPositions: List<Int>? = null
     private var orientation = 0
     private var dirty = false
     private var lastBoundPosition = INVALID_POSITION
@@ -26,7 +26,7 @@ class SectionHeaderHandler(private val recyclerView: RecyclerView) {
     private val visibilityObserver = OnGlobalLayoutListener { currentHeader?.visibility = recyclerView.visibility }
 
     fun setHeaderPositions(headerPositions: List<Int>?) {
-        mHeaderPositions = headerPositions
+        this.headerPositions = headerPositions
     }
 
     fun updateHeaderState(firstVisiblePosition: Int,
@@ -143,7 +143,7 @@ class SectionHeaderHandler(private val recyclerView: RecyclerView) {
 
     private fun getHeaderPositionToShow(firstVisiblePosition: Int, headerForPosition: View?): Int {
         var headerPositionToShow = INVALID_POSITION
-        mHeaderPositions?.let {
+        headerPositions?.let {
             if (headerIsOffset(headerForPosition)) {
                 val offsetHeaderIndex = it.indexOf(firstVisiblePosition)
                 if (offsetHeaderIndex > 0) {
@@ -309,9 +309,9 @@ class SectionHeaderHandler(private val recyclerView: RecyclerView) {
         layoutParams.setMargins(leftMargin, topMargin, rightMargin, 0)
     }
 
-    private fun headerAwayFromEdge(headerToCopy: View?): Boolean {
-        return headerToCopy != null && if (orientation == LinearLayoutManager.VERTICAL) headerToCopy.y > 0 else headerToCopy.x > 0
-    }
+    private fun headerAwayFromEdge(header: View?): Boolean = header?.let {
+        return if (orientation == LinearLayoutManager.VERTICAL) it.y > 0 else it.x > 0
+    } ?: false
 
     private fun recyclerViewHasPadding(): Boolean {
         return recyclerView.paddingLeft > 0 || recyclerView.paddingRight > 0 || recyclerView.paddingTop > 0
