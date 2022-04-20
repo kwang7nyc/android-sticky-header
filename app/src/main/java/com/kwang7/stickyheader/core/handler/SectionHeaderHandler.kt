@@ -165,7 +165,7 @@ class SectionHeaderHandler(private val recyclerView: RecyclerView) {
     private fun headerIsOffset(headerForPosition: View?): Boolean =
             headerForPosition != null && if (orientation == LinearLayoutManager.VERTICAL) headerForPosition.y > 0 else headerForPosition.x > 0
 
-    private fun attachHeader(viewHolder: RecyclerView.ViewHolder, headerPosition: Int) {
+    private fun attachHeader(viewHolder: RecyclerView.ViewHolder?, headerPosition: Int) {
         if (currentViewHolder === viewHolder) {
             currentViewHolder?.let {
                 callDetach(lastBoundPosition)
