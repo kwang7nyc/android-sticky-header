@@ -34,9 +34,7 @@ open class SectionLinearLayoutManager(
 
     fun elevateHeaders(dpElevation: Int) {
         headerElevation = if (dpElevation > 0) dpElevation else SectionHeaderHandler.NO_ELEVATION
-        if (sectionHeaderHandler != null) {
-            sectionHeaderHandler!!.setElevateHeaders(headerElevation)
-        }
+        sectionHeaderHandler?.apply { setElevateHeaders(headerElevation) }
     }
 
     override fun onLayoutChildren(recycler: Recycler, state: RecyclerView.State) {

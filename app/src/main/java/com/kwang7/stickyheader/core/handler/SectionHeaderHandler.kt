@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.kwang7.stickyheader.core.SectionLinearLayoutManager.SectionHeaderListener
 import com.kwang7.stickyheader.core.ViewHolderFactory
 
-class SectionHeaderHandler(private val mRecyclerView: RecyclerView) {
+class SectionHeaderHandler(private val recyclerView: RecyclerView) {
 
     private var currentViewHolder: RecyclerView.ViewHolder? = null
     private var currentHeader: View? = null
@@ -23,12 +23,7 @@ class SectionHeaderHandler(private val mRecyclerView: RecyclerView) {
     private var headerElevation = NO_ELEVATION.toFloat()
     private var cachedElevation = NO_ELEVATION
     private var listener: SectionHeaderListener? = null
-    private val visibilityObserver = OnGlobalLayoutListener {
-        val visibility = mRecyclerView.visibility
-        if (currentHeader != null) {
-            currentHeader!!.visibility = visibility
-        }
-    }
+    private val visibilityObserver = OnGlobalLayoutListener { currentHeader?.visibility = recyclerView.visibility }
 
     fun setHeaderPositions(headerPositions: List<Int>?) {
         mHeaderPositions = headerPositions
@@ -38,8 +33,10 @@ class SectionHeaderHandler(private val mRecyclerView: RecyclerView) {
                           visibleHeaders: Map<Int, View>,
                           viewFactory: ViewHolderFactory,
                           atTop: Boolean) {
-        val headerPositionToShow = if (atTop) INVALID_POSITION else getHeaderPositionToShow(firstVisiblePosition,
-                visibleHeaders[firstVisiblePosition])
+        val headerPositionToShow = if (atTop) INVALID_POSITION else getHeaderPositionToShow(
+                firstVisiblePosition,
+                visibleHeaders[firstVisiblePosition]
+        )
         val headerToCopy = visibleHeaders[headerPositionToShow]
         if (headerPositionToShow != lastBoundPosition) {
             if (headerPositionToShow == INVALID_POSITION || checkMargins && headerAwayFromEdge(headerToCopy)) {
@@ -56,29 +53,31 @@ class SectionHeaderHandler(private val mRecyclerView: RecyclerView) {
             lastBoundPosition = INVALID_POSITION
         }
         checkHeaderPositions(visibleHeaders)
-        mRecyclerView.post { checkElevation() }
+        recyclerView.post { checkElevation() }
     }
 
     private fun checkHeaderPositions(visibleHeaders: Map<Int, View>) {
-        if (currentHeader == null) {
-            return
-        }
-        if (currentHeader!!.height == 0) {
-            waitForLayoutAndRetry(visibleHeaders)
-            return
-        }
-        var reset = true
-        for ((key, nextHeader) in visibleHeaders) {
-            if (key <= lastBoundPosition) {
-                continue
+        currentHeader?.let {
+            if (it.height == 0) {
+                waitForLayoutAndRetry(visibleHeaders)
+                return
             }
-            reset = offsetHeader(nextHeader) == -1f
-            break
+
+            var reset = true
+
+            for ((key, nextHeader) in visibleHeaders) {
+                if (key <= lastBoundPosition) {
+                    continue
+                }
+                reset = offsetHeader(nextHeader) == -1f
+                break
+            }
+            if (reset) {
+                resetTranslation()
+            }
+
+            it.visibility = View.VISIBLE
         }
-        if (reset) {
-            resetTranslation()
-        }
-        currentHeader!!.visibility = View.VISIBLE
     }
 
     fun setElevateHeaders(dpElevation: Int) {
@@ -97,13 +96,9 @@ class SectionHeaderHandler(private val mRecyclerView: RecyclerView) {
         safeDetachHeader()
     }
 
-    fun clearHeader() {
-        detachHeader(lastBoundPosition)
-    }
+    fun clearHeader() = detachHeader(lastBoundPosition)
 
-    fun clearVisibilityObserver() {
-        mRecyclerView.viewTreeObserver.removeOnGlobalLayoutListener(visibilityObserver)
-    }
+    fun clearVisibilityObserver() = recyclerView.viewTreeObserver.removeOnGlobalLayoutListener(visibilityObserver)
 
     fun setListener(listener: SectionHeaderListener?) {
         this.listener = listener
@@ -113,153 +108,170 @@ class SectionHeaderHandler(private val mRecyclerView: RecyclerView) {
         val shouldOffsetHeader = shouldOffsetHeader(nextHeader)
         var offset = -1f
         if (shouldOffsetHeader) {
-            if (orientation == LinearLayoutManager.VERTICAL) {
-                offset = -(currentHeader!!.height - nextHeader.y)
-                currentHeader!!.translationY = offset
-            } else {
-                offset = -(currentHeader!!.width - nextHeader.x)
-                currentHeader!!.translationX = offset
+            currentHeader?.apply {
+                if (orientation == LinearLayoutManager.VERTICAL) {
+                    offset = -(height - nextHeader.y)
+                    translationY = offset
+                } else {
+                    offset = -(width - nextHeader.x)
+                    translationX = offset
+                }
             }
         }
         return offset
     }
 
     private fun shouldOffsetHeader(nextHeader: View): Boolean {
-        return if (orientation == LinearLayoutManager.VERTICAL) {
-            nextHeader.y < currentHeader!!.height
-        } else {
-            nextHeader.x < currentHeader!!.width
-        }
+        return currentHeader?.let {
+            return if (orientation == LinearLayoutManager.VERTICAL) {
+                nextHeader.y < it.height
+            } else {
+                nextHeader.x < it.width
+            }
+        } ?: false
     }
 
     private fun resetTranslation() {
-        if (orientation == LinearLayoutManager.VERTICAL) {
-            currentHeader!!.translationY = 0f
-        } else {
-            currentHeader!!.translationX = 0f
+        currentHeader?.apply {
+            if (orientation == LinearLayoutManager.VERTICAL) {
+                translationY = 0f
+            } else {
+                translationX = 0f
+            }
         }
     }
 
     private fun getHeaderPositionToShow(firstVisiblePosition: Int, headerForPosition: View?): Int {
         var headerPositionToShow = INVALID_POSITION
-        if (headerIsOffset(headerForPosition)) {
-            val offsetHeaderIndex = mHeaderPositions!!.indexOf(firstVisiblePosition)
-            if (offsetHeaderIndex > 0) {
-                return mHeaderPositions!![offsetHeaderIndex - 1]
+        mHeaderPositions?.let {
+            if (headerIsOffset(headerForPosition)) {
+                val offsetHeaderIndex = it.indexOf(firstVisiblePosition)
+                if (offsetHeaderIndex > 0) {
+                    return it[offsetHeaderIndex - 1]
+                }
             }
-        }
-        for (headerPosition in mHeaderPositions!!) {
-            headerPositionToShow = if (headerPosition <= firstVisiblePosition) {
-                headerPosition
-            } else {
-                break
+
+            for (headerPosition in it) {
+                headerPositionToShow = if (headerPosition <= firstVisiblePosition) {
+                    headerPosition
+                } else {
+                    break
+                }
             }
         }
         return headerPositionToShow
     }
 
-    private fun headerIsOffset(headerForPosition: View?): Boolean {
-        return headerForPosition != null && if (orientation == LinearLayoutManager.VERTICAL) headerForPosition.y > 0 else headerForPosition.x > 0
-    }
+    private fun headerIsOffset(headerForPosition: View?): Boolean =
+            headerForPosition != null && if (orientation == LinearLayoutManager.VERTICAL) headerForPosition.y > 0 else headerForPosition.x > 0
 
     private fun attachHeader(viewHolder: RecyclerView.ViewHolder, headerPosition: Int) {
         if (currentViewHolder === viewHolder) {
-            callDetach(lastBoundPosition)
-            mRecyclerView.adapter!!.onBindViewHolder(currentViewHolder!!, headerPosition)
-            currentViewHolder!!.itemView.requestLayout()
-            checkTranslation()
+            currentViewHolder?.let {
+                callDetach(lastBoundPosition)
+                recyclerView.adapter?.apply { onBindViewHolder(it, headerPosition) }
+                it.itemView.requestLayout()
+                checkTranslation()
+                callAttach(headerPosition)
+                dirty = false
+            }
+        } else {
+            detachHeader(lastBoundPosition)
+            currentViewHolder = viewHolder
+            currentViewHolder?.let {
+                recyclerView.adapter?.apply { onBindViewHolder(it, headerPosition) }
+                currentHeader = it.itemView
+            }
+
             callAttach(headerPosition)
+            currentHeader?.let {
+                resolveElevationSettings(it.context)
+                it.visibility = View.INVISIBLE
+                recyclerView.viewTreeObserver.addOnGlobalLayoutListener(visibilityObserver)
+                recyclerParent.addView(currentHeader)
+                if (checkMargins) {
+                    updateLayoutParams(it)
+                }
+            }
             dirty = false
-            return
         }
-        detachHeader(lastBoundPosition)
-        currentViewHolder = viewHolder
-        mRecyclerView.adapter!!.onBindViewHolder(currentViewHolder!!, headerPosition)
-        currentHeader = currentViewHolder!!.itemView
-        callAttach(headerPosition)
-        resolveElevationSettings(currentHeader!!.context)
-        currentHeader!!.visibility = View.INVISIBLE
-        mRecyclerView.viewTreeObserver.addOnGlobalLayoutListener(visibilityObserver)
-        recyclerParent.addView(currentHeader)
-        if (checkMargins) {
-            updateLayoutParams(currentHeader!!)
-        }
-        dirty = false
     }
 
     private fun currentDimension(): Int {
-        if (currentHeader == null) {
-            return 0
-        }
-        return if (orientation == LinearLayoutManager.VERTICAL) {
-            currentHeader!!.height
-        } else {
-            currentHeader!!.width
-        }
+        return currentHeader?.let {
+            return if (orientation == LinearLayoutManager.VERTICAL) {
+                it.height
+            } else {
+                it.width
+            }
+        } ?: 0
     }
 
     private fun headerHasTranslation(): Boolean {
-        if (currentHeader == null) {
-            return false
-        }
-        return if (orientation == LinearLayoutManager.VERTICAL) {
-            currentHeader!!.translationY < 0
-        } else {
-            currentHeader!!.translationX < 0
-        }
+        return currentHeader?.let {
+            return if (orientation == LinearLayoutManager.VERTICAL) {
+                it.translationY < 0
+            } else {
+                it.translationX < 0
+            }
+        } ?: false
     }
 
     private fun updateTranslation(diff: Int) {
-        if (currentHeader == null) {
-            return
-        }
-        if (orientation == LinearLayoutManager.VERTICAL) {
-            currentHeader!!.translationY = currentHeader!!.translationY + diff
-        } else {
-            currentHeader!!.translationX = currentHeader!!.translationX + diff
+        currentHeader?.apply {
+            if (orientation == LinearLayoutManager.VERTICAL) {
+                translationY += diff
+            } else {
+                translationX += diff
+            }
         }
     }
 
     private fun checkTranslation() {
         val view = currentHeader ?: return
         view.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
-            var previous = currentDimension()
+            var previousDimen = currentDimension()
             override fun onGlobalLayout() {
                 view.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 if (currentHeader == null) {
                     return
                 }
                 val newDimen = currentDimension()
-                if (headerHasTranslation() && previous != newDimen) {
-                    updateTranslation(previous - newDimen)
+                if (headerHasTranslation() && previousDimen != newDimen) {
+                    updateTranslation(previousDimen - newDimen)
                 }
             }
         })
     }
 
     private fun checkElevation() {
-        if (headerElevation != NO_ELEVATION.toFloat() && currentHeader != null) {
-            if (orientation == LinearLayoutManager.VERTICAL && currentHeader!!.translationY == 0f
-                    || orientation == LinearLayoutManager.HORIZONTAL && currentHeader!!.translationX == 0f) {
-                elevateHeader()
-            } else {
-                settleHeader()
+        if (headerElevation != NO_ELEVATION.toFloat()) {
+            currentHeader?.let {
+                if (orientation == LinearLayoutManager.VERTICAL && it.translationY == 0f
+                        || orientation == LinearLayoutManager.HORIZONTAL && it.translationX == 0f) {
+                    elevateHeader()
+                } else {
+                    settleHeader()
+                }
             }
         }
     }
 
     private fun elevateHeader() {
-        if (currentHeader!!.tag != null) {
-            return
+        currentHeader?.apply {
+            if (tag != null)
+                return
+            tag = true
+            animate().z(headerElevation)
         }
-        currentHeader!!.tag = true
-        currentHeader!!.animate().z(headerElevation)
     }
 
     private fun settleHeader() {
-        if (currentHeader!!.tag != null) {
-            currentHeader!!.tag = null
-            currentHeader!!.animate().z(0f)
+        currentHeader?.apply {
+            if (tag != null) {
+                tag = null
+                animate().z(0f)
+            }
         }
     }
 
@@ -274,14 +286,14 @@ class SectionHeaderHandler(private val mRecyclerView: RecyclerView) {
     }
 
     private fun callAttach(position: Int) {
-        if (listener != null) {
-            listener!!.headerAttached(currentHeader, position)
+        listener?.apply {
+            headerAttached(currentHeader, position)
         }
     }
 
     private fun callDetach(position: Int) {
-        if (listener != null) {
-            listener!!.headerDetached(currentHeader, position)
+        listener?.apply {
+            headerDetached(currentHeader, position)
         }
     }
 
@@ -291,9 +303,9 @@ class SectionHeaderHandler(private val mRecyclerView: RecyclerView) {
     }
 
     private fun matchMarginsToPadding(layoutParams: MarginLayoutParams) {
-        @Px val leftMargin = if (orientation == LinearLayoutManager.VERTICAL) mRecyclerView.paddingLeft else 0
-        @Px val topMargin = if (orientation == LinearLayoutManager.VERTICAL) 0 else mRecyclerView.paddingTop
-        @Px val rightMargin = if (orientation == LinearLayoutManager.VERTICAL) mRecyclerView.paddingRight else 0
+        @Px val leftMargin = if (orientation == LinearLayoutManager.VERTICAL) recyclerView.paddingLeft else 0
+        @Px val topMargin = if (orientation == LinearLayoutManager.VERTICAL) 0 else recyclerView.paddingTop
+        @Px val rightMargin = if (orientation == LinearLayoutManager.VERTICAL) recyclerView.paddingRight else 0
         layoutParams.setMargins(leftMargin, topMargin, rightMargin, 0)
     }
 
@@ -302,11 +314,11 @@ class SectionHeaderHandler(private val mRecyclerView: RecyclerView) {
     }
 
     private fun recyclerViewHasPadding(): Boolean {
-        return mRecyclerView.paddingLeft > 0 || mRecyclerView.paddingRight > 0 || mRecyclerView.paddingTop > 0
+        return recyclerView.paddingLeft > 0 || recyclerView.paddingRight > 0 || recyclerView.paddingTop > 0
     }
 
     private val recyclerParent: ViewGroup
-        private get() = mRecyclerView.parent as ViewGroup
+        get() = recyclerView.parent as ViewGroup
 
     private fun waitForLayoutAndRetry(visibleHeaders: Map<Int, View>) {
         val view = currentHeader ?: return
@@ -317,6 +329,7 @@ class SectionHeaderHandler(private val mRecyclerView: RecyclerView) {
                         if (currentHeader == null) {
                             return
                         }
+
                         recyclerParent.requestLayout()
                         checkHeaderPositions(visibleHeaders)
                     }
